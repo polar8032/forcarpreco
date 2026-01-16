@@ -2,59 +2,227 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Ajuste Profissional</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calculadora PriceForce</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 15px; display: flex; justify-content: center; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        :root {
+            --primary: #4361ee;
+            --primary-light: #eef2ff;
+            --text-dark: #2b2d42;
+            --text-light: #8d99ae;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --white: #ffffff;
+            --danger: #ef233c;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --radius: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            color: var(--text-dark);
+        }
+
+        .card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+        }
+
+        /* Header e Botão Ajuda */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h2 { margin: 0; font-size: 1.4rem; color: var(--text-dark); font-weight: 700; }
         
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e8f0fe; }
-        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #666; }
-        .tab.active { color: #1a73e8; border-bottom: 3px solid #1a73e8; }
-        
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 8px 5px; }
-        label { font-size: 0.85rem; color: #444; font-weight: 600; }
-        input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        
-        .result-box { background-color: #fff4f4; margin-top: 15px; padding: 15px; border-radius: 8px; text-align: center; border: 2px solid #d93025; }
-        .result-label { font-size: 0.8rem; color: #d93025; text-transform: uppercase; font-weight: bold; }
-        .result-val { font-size: 1.8rem; font-weight: bold; color: #d93025; }
-        
-        .btn-limpar { width: 100%; margin-top: 10px; padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-ajuda {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            background: #f1f3f5;
+            padding: 5px;
+            border-radius: 12px;
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .tab.active {
+            background: var(--white);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* Form Elements */
+        .input-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid transparent;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            box-sizing: border-box;
+            font-weight: 500;
+        }
+        input:focus {
+            background: var(--white);
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        /* Result Box */
+        .result-box {
+            background: linear-gradient(135deg, #fff0f3 0%, #ffe3e3 100%);
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(239, 35, 60, 0.2);
+        }
+        .result-label { font-size: 0.75rem; color: var(--danger); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; opacity: 0.8; }
+        .result-val { font-size: 2rem; font-weight: 800; color: var(--danger); letter-spacing: -1px; }
+
+        /* Buttons */
+        .btn-limpar {
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            background-color: white;
+            color: var(--text-light);
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-limpar:active { background-color: #f8f9fa; border-color: #cbd5e1; }
+
         .hidden { display: none; }
+        
+        /* Modal Styles */
+        #modalAjuda { 
+            display: none; 
+            position: fixed; 
+            z-index: 9999; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.5); 
+            backdrop-filter: blur(3px);
+            overflow-y: auto; 
+        }
+        
+        .modal-content {
+            background: var(--white);
+            margin: 40px auto; 
+            padding: 25px;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .modal-content h3 { color: var(--primary); margin-top: 0; font-size: 1.3rem; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;}
+        .modal-content h4 { color: var(--text-dark); margin: 20px 0 10px 0; font-size: 1rem; }
+        .modal-content ul { padding-left: 0; list-style: none; margin: 0; }
+        .modal-content li { margin-bottom: 8px; font-size: 0.9rem; color: #555; padding-left: 10px; border-left: 3px solid #eee; }
+        
+        .note-box { background: var(--primary-light); color: var(--primary); padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-top: 20px; border-left: 4px solid var(--primary); line-height: 1.4; }
+
+        .btn-fechar-modal {
+            background: var(--text-dark);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .btn-fechar-modal:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <div class="tabs">
-        <div class="tab active" onclick="switchTab('unidade')">Unitário</div>
-        <div class="tab" onclick="switchTab('peso')">Ao Peso (Kg)</div>
+    <header>
+        <h2>Ajuste de Preço</h2>
+        <button class="btn-ajuda" onclick="toggleAjuda()">?</button>
+    </header>
+    
+    <div class="tabs-container">
+        <div class="tab active" id="tabUn" onclick="switchTab('unidade')">Unitário</div>
+        <div class="tab" id="tabPeso" onclick="switchTab('peso')">Ao Peso (Kg)</div>
     </div>
 
     <div id="modoUnidade">
-        <table>
-            <tr><td><label>Preço base antes de forçar (€)</label></td>
-                <td><input type="number" id="baseUn" step="0.01" oninput="calcUn()"></td></tr>
-            <tr><td><label>Preço atual na caixa (€)</label></td>
-                <td><input type="number" id="caixaUn" step="0.01" oninput="calcUn()"></td></tr>
-            <tr><td><label>Preço pretendido (€)</label></td>
-                <td><input type="number" id="alvoUn" step="0.01" oninput="calcUn()"></td></tr>
-        </table>
+        <div class="input-group">
+            <label>Preço base antes de forçar (€)</label>
+            <input type="number" id="baseUn" step="0.01" placeholder="Ex: 5.00" oninput="calcUn()">
+        </div>
+        <div class="input-group">
+            <label>Preço atual na caixa (€)</label>
+            <input type="number" id="caixaUn" step="0.01" placeholder="Ex: 4.21" oninput="calcUn()">
+        </div>
+        <div class="input-group">
+            <label>Preço pretendido (€)</label>
+            <input type="number" id="alvoUn" step="0.01" placeholder="Ex: 3.90" oninput="calcUn()">
+        </div>
     </div>
 
     <div id="modoPeso" class="hidden">
-        <table>
-            <tr><td><label>Peso do artigo (Kg)</label></td>
-                <td><input type="number" id="pesoKg" step="0.001" placeholder="Ex: 0.550" oninput="calcPeso()"></td></tr>
-            <tr><td><label>Preço Base por Kg no PC (€)</label></td>
-                <td><input type="number" id="basePeso" step="0.01" placeholder="Ex: 10.00" oninput="calcPeso()"></td></tr>
-            <tr><td><label>Valor que deu na caixa (€)</label></td>
-                <td><input type="number" id="caixaPeso" step="0.01" oninput="calcPeso()"></td></tr>
-            <tr><td><label>Valor que pretendes (€)</label></td>
-                <td><input type="number" id="alvoPeso" step="0.01" oninput="calcPeso()"></td></tr>
-        </table>
+        <div class="input-group">
+            <label>Peso do artigo (Kg)</label>
+            <input type="number" id="pesoKg" step="0.001" placeholder="Ex: 0.550" oninput="calcPeso()">
+        </div>
+        <div class="input-group">
+            <label>Preço Base/Kg no PC (€)</label>
+            <input type="number" id="basePeso" step="0.01" placeholder="Ex: 10.00" oninput="calcPeso()">
+        </div>
+        <div class="input-group">
+            <label>Valor que passa na caixa (€)</label>
+            <input type="number" id="caixaPeso" step="0.01" placeholder="Ex: 4.50" oninput="calcPeso()">
+        </div>
+        <div class="input-group">
+            <label>Valor que pretendes (€)</label>
+            <input type="number" id="alvoPeso" step="0.01" placeholder="Ex: 4.00" oninput="calcPeso()">
+        </div>
     </div>
 
     <div class="result-box">
@@ -65,18 +233,49 @@
     <button class="btn-limpar" onclick="limpar()">Limpar Tudo</button>
 </div>
 
+<div id="modalAjuda">
+    <div class="modal-content">
+        <h3>Ajuda</h3>
+        
+        <h4>📦 Modo Unitário</h4>
+        <ul>
+            <li><strong>Preço base antes de forçar:</strong> O preço original registado no sistema.</li>
+            <li><strong>Preço atual na caixa:</strong> O valor errado que a caixa cobra hoje.</li>
+            <li><strong>Preço pretendido:</strong> O valor final correto.</li>
+        </ul>
+
+        <h4>⚖️ Modo Ao Peso (Kg)</h4>
+        <ul>
+            <li><strong>Peso do artigo:</strong> Valor exato da balança (ex: 0.500).</li>
+            <li><strong>Preço Base/Kg no PC:</strong> O preço por quilo original.</li>
+            <li><strong>Valor que passa na caixa:</strong> O preço total que aparece no visor.</li>
+            <li><strong>Valor que pretendes:</strong> O preço total que queres cobrar.</li>
+        </ul>
+        
+        <div class="note-box">
+            No modo peso, o resultado final será o <strong>novo preço por Kg</strong> que deves colocar no pc quando forças o preço.
+        </div>
+        
+        <button class="btn-fechar-modal" onclick="toggleAjuda()">Fechar</button>
+    </div>
+</div>
+
 <script>
     let currentTab = 'unidade';
 
     function switchTab(tab) {
         currentTab = tab;
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+        
+        document.getElementById('tabUn').classList.toggle('active', tab === 'unidade');
+        document.getElementById('tabPeso').classList.toggle('active', tab === 'peso');
         
         document.getElementById('modoUnidade').classList.toggle('hidden', tab !== 'unidade');
         document.getElementById('modoPeso').classList.toggle('hidden', tab !== 'peso');
+        
         document.getElementById('resLabel').innerText = tab === 'unidade' ? "Novo Preço Base" : "Novo Preço Base / Kg";
-        limpar();
+        
+        // Limpa apenas valores
+        limparValuesOnly();
     }
 
     function calcUn() {
@@ -95,22 +294,36 @@
         const valorAlvo = parseFloat(document.getElementById('alvoPeso').value);
 
         if (peso && baseKg && valorCaixa && valorAlvo) {
-            // Primeiro descobrimos o preço real por kg que a caixa está a cobrar (com desconto)
-            const precoRealKgComDesconto = valorCaixa / peso;
-            // Coeficiente de desconto = Preço Real com Desconto / Preço Base do PC
-            const coeficiente = precoRealKgComDesconto / baseKg;
-            // Preço final por kg que queremos atingir
-            const precoAlvoKg = valorAlvo / peso;
-            // Novo preço base a marcar no PC
-            const novoBaseKg = precoAlvoKg / coeficiente;
-            
+            const coeficiente = (valorCaixa / peso) / baseKg;
+            const novoBaseKg = (valorAlvo / peso) / coeficiente;
             document.getElementById('resultado').innerText = novoBaseKg.toFixed(2) + " €/Kg";
         }
     }
 
     function limpar() {
+        limparValuesOnly();
+    }
+
+    function limparValuesOnly() {
         document.querySelectorAll('input').forEach(i => i.value = '');
         document.getElementById('resultado').innerText = '0.00 €';
+    }
+
+    function toggleAjuda() {
+        const m = document.getElementById('modalAjuda');
+        if (m.style.display === 'block') {
+            m.style.display = 'none';
+        } else {
+            m.style.display = 'block';
+        }
+    }
+    
+    // Fecha o modal se clicar fora da caixa branca
+    window.onclick = function(event) {
+        const m = document.getElementById('modalAjuda');
+        if (event.target == m) {
+            m.style.display = "none";
+        }
     }
 </script>
 
