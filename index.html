@@ -13,9 +13,18 @@
         label { font-size: 0.95rem; color: #444; font-weight: 600; }
         input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1.1rem; transition: border-color 0.3s; }
         input:focus { border-color: #1a73e8; outline: none; background-color: #f9fbff; }
+        
         .result-box { background-color: #fff4f4; margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; border: 2px solid #d93025; }
         .result-label { font-size: 0.85rem; color: #d93025; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: bold; }
         .result-val { font-size: 2rem; font-weight: bold; color: #d93025; }
+        
+        .btn-limpar { 
+            width: 100%; margin-top: 15px; padding: 12px; background-color: #6c757d; color: white; border: none; 
+            border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background-color 0.3s;
+        }
+        .btn-limpar:hover { background-color: #5a6268; }
+        .btn-limpar:active { background-color: #495057; }
+        
         .info { font-size: 0.75rem; color: #777; margin-top: 15px; line-height: 1.4; text-align: center; }
     </style>
 </head>
@@ -44,8 +53,10 @@
         <div id="resultado" class="result-val">0.00 €</div>
     </div>
 
+    <button class="btn-limpar" onclick="limparCampos()">Limpar Tudo</button>
+
     <div class="info">
-        Insira os valores para calcular o novo preço base necessário para atingir o valor pretendido na caixa, mantendo o desconto proporcional.
+        Insira os valores para calcular o novo preço base necessário para atingir o valor pretendido na caixa.
     </div>
 </div>
 
@@ -57,17 +68,24 @@
         const display = document.getElementById('resultado');
 
         if (baseAntes && caixaAtual && alvo && caixaAtual !== 0) {
-            // Calcula o novo preço base mantendo a proporção do desconto
-            // NovoBase = Alvo / (PreçoCaixa / PreçoBaseAntigo)
             const proporcao = caixaAtual / baseAntes;
             const novoBase = alvo / proporcao;
-            
             display.innerText = novoBase.toFixed(2) + " €";
         } else {
             display.innerText = "0.00 €";
         }
     }
+
+    function limparCampos() {
+        document.getElementById('baseAntes').value = '';
+        document.getElementById('caixaAtual').value = '';
+        document.getElementById('alvo').value = '';
+        document.getElementById('resultado').innerText = '0.00 €';
+        document.getElementById('baseAntes').focus(); // Volta o foco para o primeiro campo
+    }
 </script>
 
 </body>
 </html>
+
+
