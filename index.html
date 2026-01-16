@@ -3,89 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Ajuste de Preço</title>
+    <title>Calculadora de Ajuste Profissional</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        h2 { color: #1a73e8; font-size: 1.3rem; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #e8f0fe; padding-bottom: 10px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 15px; display: flex; justify-content: center; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #e8f0fe; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; color: #666; }
+        .tab.active { color: #1a73e8; border-bottom: 3px solid #1a73e8; }
+        
         table { width: 100%; border-collapse: collapse; }
-        td { padding: 12px 5px; vertical-align: middle; }
-        label { font-size: 0.95rem; color: #444; font-weight: 600; }
-        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1.1rem; transition: border-color 0.3s; }
-        input:focus { border-color: #1a73e8; outline: none; background-color: #f9fbff; }
+        td { padding: 8px 5px; }
+        label { font-size: 0.85rem; color: #444; font-weight: 600; }
+        input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
         
-        .result-box { background-color: #fff4f4; margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; border: 2px solid #d93025; }
-        .result-label { font-size: 0.85rem; color: #d93025; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: bold; }
-        .result-val { font-size: 2rem; font-weight: bold; color: #d93025; }
+        .result-box { background-color: #fff4f4; margin-top: 15px; padding: 15px; border-radius: 8px; text-align: center; border: 2px solid #d93025; }
+        .result-label { font-size: 0.8rem; color: #d93025; text-transform: uppercase; font-weight: bold; }
+        .result-val { font-size: 1.8rem; font-weight: bold; color: #d93025; }
         
-        .btn-limpar { 
-            width: 100%; margin-top: 15px; padding: 12px; background-color: #6c757d; color: white; border: none; 
-            border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background-color 0.3s;
-        }
-        .btn-limpar:hover { background-color: #5a6268; }
-        .btn-limpar:active { background-color: #495057; }
-        
-        .info { font-size: 0.75rem; color: #777; margin-top: 15px; line-height: 1.4; text-align: center; }
+        .btn-limpar { width: 100%; margin-top: 10px; padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>Ajuste de Preço Base</h2>
-    
-    <table>
-        <tr>
-            <td><label>Preço base antes de forçar (€)</label></td>
-            <td><input type="number" id="baseAntes" step="0.01" placeholder="Ex: 5.00" oninput="calcular()"></td>
-        </tr>
-        <tr>
-            <td><label>Preço atual na caixa (€)</label></td>
-            <td><input type="number" id="caixaAtual" step="0.01" placeholder="Ex: 4.21" oninput="calcular()"></td>
-        </tr>
-        <tr>
-            <td><label>Preço pretendido (€)</label></td>
-            <td><input type="number" id="alvo" step="0.01" placeholder="Ex: 3.90" oninput="calcular()"></td>
-        </tr>
-    </table>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('unidade')">Unitário</div>
+        <div class="tab" onclick="switchTab('peso')">Ao Peso (Kg)</div>
+    </div>
+
+    <div id="modoUnidade">
+        <table>
+            <tr><td><label>Preço base antes de forçar (€)</label></td>
+                <td><input type="number" id="baseUn" step="0.01" oninput="calcUn()"></td></tr>
+            <tr><td><label>Preço atual na caixa (€)</label></td>
+                <td><input type="number" id="caixaUn" step="0.01" oninput="calcUn()"></td></tr>
+            <tr><td><label>Preço pretendido (€)</label></td>
+                <td><input type="number" id="alvoUn" step="0.01" oninput="calcUn()"></td></tr>
+        </table>
+    </div>
+
+    <div id="modoPeso" class="hidden">
+        <table>
+            <tr><td><label>Peso do artigo (Kg)</label></td>
+                <td><input type="number" id="pesoKg" step="0.001" placeholder="Ex: 0.550" oninput="calcPeso()"></td></tr>
+            <tr><td><label>Preço Base por Kg no PC (€)</label></td>
+                <td><input type="number" id="basePeso" step="0.01" placeholder="Ex: 10.00" oninput="calcPeso()"></td></tr>
+            <tr><td><label>Valor que deu na caixa (€)</label></td>
+                <td><input type="number" id="caixaPeso" step="0.01" oninput="calcPeso()"></td></tr>
+            <tr><td><label>Valor que pretendes (€)</label></td>
+                <td><input type="number" id="alvoPeso" step="0.01" oninput="calcPeso()"></td></tr>
+        </table>
+    </div>
 
     <div class="result-box">
-        <div class="result-label">Novo Preço Base a Marcar</div>
+        <div class="result-label" id="resLabel">Novo Preço Base a Marcar</div>
         <div id="resultado" class="result-val">0.00 €</div>
     </div>
 
-    <button class="btn-limpar" onclick="limparCampos()">Limpar Tudo</button>
-
-    <div class="info">
-        Insira os valores para calcular o novo preço base necessário para atingir o valor pretendido na caixa.
-    </div>
+    <button class="btn-limpar" onclick="limpar()">Limpar Tudo</button>
 </div>
 
 <script>
-    function calcular() {
-        const baseAntes = parseFloat(document.getElementById('baseAntes').value);
-        const caixaAtual = parseFloat(document.getElementById('caixaAtual').value);
-        const alvo = parseFloat(document.getElementById('alvo').value);
-        const display = document.getElementById('resultado');
+    let currentTab = 'unidade';
 
-        if (baseAntes && caixaAtual && alvo && caixaAtual !== 0) {
-            const proporcao = caixaAtual / baseAntes;
-            const novoBase = alvo / proporcao;
-            display.innerText = novoBase.toFixed(2) + " €";
-        } else {
-            display.innerText = "0.00 €";
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        
+        document.getElementById('modoUnidade').classList.toggle('hidden', tab !== 'unidade');
+        document.getElementById('modoPeso').classList.toggle('hidden', tab !== 'peso');
+        document.getElementById('resLabel').innerText = tab === 'unidade' ? "Novo Preço Base" : "Novo Preço Base / Kg";
+        limpar();
+    }
+
+    function calcUn() {
+        const b = parseFloat(document.getElementById('baseUn').value);
+        const c = parseFloat(document.getElementById('caixaUn').value);
+        const a = parseFloat(document.getElementById('alvoUn').value);
+        if (b && c && a) {
+            document.getElementById('resultado').innerText = (a / (c / b)).toFixed(2) + " €";
         }
     }
 
-    function limparCampos() {
-        document.getElementById('baseAntes').value = '';
-        document.getElementById('caixaAtual').value = '';
-        document.getElementById('alvo').value = '';
+    function calcPeso() {
+        const peso = parseFloat(document.getElementById('pesoKg').value);
+        const baseKg = parseFloat(document.getElementById('basePeso').value);
+        const valorCaixa = parseFloat(document.getElementById('caixaPeso').value);
+        const valorAlvo = parseFloat(document.getElementById('alvoPeso').value);
+
+        if (peso && baseKg && valorCaixa && valorAlvo) {
+            // Primeiro descobrimos o preço real por kg que a caixa está a cobrar (com desconto)
+            const precoRealKgComDesconto = valorCaixa / peso;
+            // Coeficiente de desconto = Preço Real com Desconto / Preço Base do PC
+            const coeficiente = precoRealKgComDesconto / baseKg;
+            // Preço final por kg que queremos atingir
+            const precoAlvoKg = valorAlvo / peso;
+            // Novo preço base a marcar no PC
+            const novoBaseKg = precoAlvoKg / coeficiente;
+            
+            document.getElementById('resultado').innerText = novoBaseKg.toFixed(2) + " €/Kg";
+        }
+    }
+
+    function limpar() {
+        document.querySelectorAll('input').forEach(i => i.value = '');
         document.getElementById('resultado').innerText = '0.00 €';
-        document.getElementById('baseAntes').focus(); // Volta o foco para o primeiro campo
     }
 </script>
 
 </body>
 </html>
-
-
