@@ -14,6 +14,14 @@
             --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             --white: #ffffff;
             --danger: #ef233c;
+            --warning: #d97706;
+            --warning-bg: #fffbeb;
+            
+            /* Novas variáveis para o Verde (Sucesso) */
+            --success: #16a34a; /* Verde escuro para texto */
+            --success-bg: #f0fdf4; /* Verde muito claro para fundos */
+            --success-gradient: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            
             --shadow: 0 10px 30px rgba(0,0,0,0.08);
             --radius: 20px;
             --anim-speed: 0.3s;
@@ -134,18 +142,18 @@
             box-shadow: 0 0 0 4px var(--primary-light);
         }
 
-        /* Result Box */
+        /* Result Box - Agora Verde */
         .result-box {
-            background: linear-gradient(135deg, #fff0f3 0%, #ffe3e3 100%);
+            background: var(--success-gradient);
             margin-top: 25px;
             padding: 20px;
             border-radius: 16px;
             text-align: center;
-            border: 1px solid rgba(239, 35, 60, 0.15);
+            border: 1px solid rgba(22, 163, 74, 0.15); /* Borda verde suave */
             transition: transform 0.2s var(--bounce);
         }
-        .result-label { font-size: 0.75rem; color: var(--danger); text-transform: uppercase; font-weight: 800; letter-spacing: 1.2px; margin-bottom: 5px; opacity: 0.8; }
-        .result-val { font-size: 2.2rem; font-weight: 900; color: var(--danger); letter-spacing: -1px; }
+        .result-label { font-size: 0.75rem; color: var(--success); text-transform: uppercase; font-weight: 800; letter-spacing: 1.2px; margin-bottom: 5px; opacity: 0.8; }
+        .result-val { font-size: 2.2rem; font-weight: 900; color: var(--success); letter-spacing: -1px; }
 
         /* Buttons */
         .btn-limpar {
@@ -163,7 +171,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Botão de Partilha (Novo) */
+        /* Botão de Partilha */
         .btn-share {
             width: 100%;
             margin-top: 12px;
@@ -256,13 +264,13 @@
         .modal-content li { margin-bottom: 12px; font-size: 0.95rem; color: #4a4a4a; padding-left: 15px; border-left: 3px solid #e2e8f0; }
         
         .info-note {
-            background: var(--primary-light);
+            background: var(--warning-bg);
             color: var(--text-dark);
             padding: 15px;
             border-radius: 12px;
             font-size: 0.8rem;
             margin-bottom: 20px;
-            border-left: 4px solid var(--primary);
+            border-left: 4px solid var(--warning);
             line-height: 1.5;
         }
 
@@ -270,7 +278,7 @@
             display: flex;
             align-items: center;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--warning);
             margin-bottom: 8px;
             text-transform: uppercase;
             font-size: 0.85rem;
@@ -284,11 +292,12 @@
             flex-shrink: 0;
         }
 
+        /* Highlight na Ajuda - Agora Verde */
         .result-highlight {
-            color: var(--danger) !important;
+            color: var(--success) !important;
             font-weight: 700;
-            border-left-color: var(--danger) !important;
-            background: #fff5f5;
+            border-left-color: var(--success) !important;
+            background: var(--success-bg);
             padding: 8px 8px 8px 15px;
             border-radius: 0 8px 8px 0;
         }
@@ -323,6 +332,17 @@
 
     <div id="contentWrapper" class="content-wrapper">
         <div id="modoUnidade">
+            <!-- Nota de Atenção no Modo Unitário -->
+            <div class="info-note">
+                <div class="info-note-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+                    </svg>
+                    Atenção
+                </div>
+                Calcular apenas neste modo em produtos unitários quando está em vigor promoção diferente da que estava exposta para o cliente.
+            </div>
+
             <div class="input-group">
                 <label>Preço base do artigo (€)</label>
                 <input type="number" id="baseUn" step="0.01" placeholder="Ex: 5.00" oninput="calcUn()">
@@ -338,6 +358,7 @@
         </div>
 
         <div id="modoPeso" class="hidden">
+            <!-- Nota de Atenção no Modo Peso -->
             <div class="info-note">
                 <div class="info-note-header">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -347,21 +368,20 @@
                 </div>
                 Calcular apenas neste modo em produtos ao peso quando está em vigor promoção diferente da que estava exposta para o cliente ou por algum motivo o preço passar mal apesar de estar correto em sistema.
             </div>
+
             <div class="input-group">
-                <label>Peso do artigo (Kg)</label>
-                <input type="number" id="pesoKg" step="0.001" placeholder="Ex: 0.550" oninput="calcPeso()">
-            </div>
-            <div class="input-group">
-                <label>Preço do Kg que passa na caixa (€)</label>
+                <label>Preço base do Kg sem desconto</label>
                 <input type="number" id="basePeso" step="0.01" placeholder="Ex: 10.00" oninput="calcPeso()">
             </div>
+            
             <div class="input-group">
                 <label>Valor que passa na caixa (€)</label>
                 <input type="number" id="caixaPeso" step="0.01" placeholder="Ex: 4.50" oninput="calcPeso()">
             </div>
+            
             <div class="input-group">
-                <label>Valor que pretendes (€)</label>
-                <input type="number" id="alvoPeso" step="0.01" placeholder="Ex: 4.00" oninput="calcPeso()">
+                <label>Preço do Kg que pretendes</label>
+                <input type="number" id="targetKg" step="0.01" placeholder="Ex: 8.00" oninput="calcPeso()">
             </div>
         </div>
     </div>
@@ -373,7 +393,6 @@
 
     <button class="btn-limpar" onclick="limpar()">Limpar Tudo</button>
     
-    <!-- Novo Botão de Partilha -->
     <button class="btn-share" onclick="partilharApp()">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
@@ -388,19 +407,18 @@
         
         <h4>📦 Modo Unitário</h4>
         <ul>
-            <li><strong>Preço base do artigo:</strong> O preço original registado no sistema.</li>
-            <li><strong>Valor que passa na caixa:</strong> O valor errado que a caixa cobra hoje.</li>
-            <li><strong>Valor que pretendes:</strong> O valor final correto.</li>
-            <li class="result-highlight"><strong>Colocar no POS:</strong> O novo preço base que deves inserir no sistema.</li>
+            <li><strong>Preço base:</strong> Insere o preço base do artigo sem desconto.</li>
+            <li><strong>Valor na caixa:</strong> insere o valor que passa na caixa.</li>
+            <li><strong>Valor pretendido:</strong> insere o valor que pretendes.</li>
+            <li class="result-highlight"><strong>Colocar no POS:</strong> valor que inseres no pos quando forças o preço.</li>
         </ul>
 
         <h4>⚖️ Modo Ao Peso (Kg)</h4>
         <ul>
-            <li><strong>Peso do artigo:</strong> Valor exato da balança (ex: 0.500).</li>
-            <li><strong>Preço do Kg que passa na caixa:</strong> O preço por quilo que está atualmente no sistema.</li>
-            <li><strong>Valor que passa na caixa:</strong> O preço total que aparece no visor.</li>
-            <li><strong>Valor que pretendes:</strong> O preço total que queres cobrar.</li>
-            <li class="result-highlight"><strong>Colocar no POS:</strong> O novo preço por Kg que deves inserir no sistema.</li>
+            <li><strong>Preço base Kg:</strong> insere o preço base do kg sem desconto.</li>
+            <li><strong>Valor na caixa:</strong> insere o valor que está a passar na caixa.</li>
+            <li><strong>Preço Kg pretendido:</strong> insere o preço do kg que pretendes.</li>
+            <li class="result-highlight"><strong>Colocar no POS:</strong> valor que inseres no pos quando forças o preço.</li>
         </ul>
         
         <button class="btn-fechar-modal" onclick="toggleAjuda()">Fechar</button>
@@ -438,7 +456,7 @@
             wrapper.classList.remove('fade-out');
             
             isAnimating = false;
-        }, 250); // Tempo sincronizado com CSS transition
+        }, 250); 
     }
 
     function calcUn() {
@@ -446,26 +464,29 @@
         const c = parseFloat(document.getElementById('caixaUn').value);
         const a = parseFloat(document.getElementById('alvoUn').value);
         if (b && c && a) {
-            document.getElementById('resultado').innerText = (a / (c / b)).toFixed(2) + " €";
+            const result = a * (b / c);
+            document.getElementById('resultado').innerText = result.toFixed(2) + " €";
             pulseResult();
         }
     }
 
     function calcPeso() {
-        const peso = parseFloat(document.getElementById('pesoKg').value);
-        const baseKg = parseFloat(document.getElementById('basePeso').value);
-        const valorCaixa = parseFloat(document.getElementById('caixaPeso').value);
-        const valorAlvo = parseFloat(document.getElementById('alvoPeso').value);
+        const valBase = parseFloat(document.getElementById('basePeso').value); 
+        const valCaixa = parseFloat(document.getElementById('caixaPeso').value); 
+        const targetKg = parseFloat(document.getElementById('targetKg').value);
 
-        if (peso && baseKg && valorCaixa && valorAlvo) {
-            const coeficiente = (valorCaixa / peso) / baseKg;
-            const novoBaseKg = (valorAlvo / peso) / coeficiente;
-            document.getElementById('resultado').innerText = novoBaseKg.toFixed(2) + " €/Kg";
-            pulseResult();
+        if (valBase && valCaixa && targetKg) {
+            // Lógica Proporcional Simples (Target * (Base/Caixa))
+            // Assume que Base e Caixa estão na mesma unidade (ambos Kg ou ambos Totais)
+            
+            if (valCaixa > 0) {
+                const novoBaseKg = targetKg * (valBase / valCaixa);
+                document.getElementById('resultado').innerText = novoBaseKg.toFixed(2) + " €/Kg";
+                pulseResult();
+            }
         }
     }
 
-    // Pequeno pulso visual quando o resultado muda
     function pulseResult() {
         const resBox = document.querySelector('.result-box');
         resBox.style.transform = "scale(1.02)";
@@ -474,7 +495,6 @@
 
     function limpar() {
         limparValuesOnly();
-        // Feedback visual
         const btn = document.querySelector('.btn-limpar');
         const originalText = btn.innerText;
         btn.innerText = "Limpo!";
@@ -482,7 +502,7 @@
     }
 
     function limparValuesOnly() {
-        document.querySelectorAll('input').forEach(i => i.value = '');
+        document.querySelectorAll('input[type="number"]').forEach(i => i.value = '');
         document.getElementById('resultado').innerText = '0.00 €';
     }
 
@@ -491,7 +511,6 @@
         m.classList.toggle('open');
     }
     
-    // Função de partilha
     async function partilharApp() {
         const shareData = {
             title: 'Forçar Preço',
@@ -506,18 +525,15 @@
             if (navigator.share) {
                 await navigator.share(shareData);
             } else {
-                // Fallback para clipboard
                 await navigator.clipboard.writeText(window.location.href);
                 btn.innerHTML = "Link copiado!";
                 setTimeout(() => btn.innerHTML = originalHTML, 2000);
             }
         } catch (err) {
-            // Se o utilizador cancelar a partilha, não faz nada (evita erros na consola)
             console.log('Partilha cancelada ou erro');
         }
     }
     
-    // Fecha o modal se clicar fora
     window.onclick = function(event) {
         const m = document.getElementById('modalAjuda');
         if (event.target == m) {
