@@ -161,7 +161,41 @@
         .modal-content ul { padding-left: 0; list-style: none; margin: 0; }
         .modal-content li { margin-bottom: 8px; font-size: 0.9rem; color: #555; padding-left: 10px; border-left: 3px solid #eee; }
         
-        .note-box { background: var(--primary-light); color: var(--primary); padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-top: 20px; border-left: 4px solid var(--primary); line-height: 1.4; }
+        /* Nota Azul estilo aviso */
+        .info-note {
+            background: var(--primary-light);
+            color: var(--text-dark);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+            line-height: 1.4;
+        }
+
+        .info-note-header {
+            display: flex;
+            align-items: center;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-note-header svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 6px;
+            flex-shrink: 0;
+        }
+
+        .result-highlight {
+            color: var(--danger) !important;
+            font-weight: 700;
+            border-left-color: var(--danger) !important;
+        }
 
         .btn-fechar-modal {
             background: var(--text-dark);
@@ -193,26 +227,35 @@
 
     <div id="modoUnidade">
         <div class="input-group">
-            <label>Preço base antes de forçar (€)</label>
+            <label>Preço base do artigo (€)</label>
             <input type="number" id="baseUn" step="0.01" placeholder="Ex: 5.00" oninput="calcUn()">
         </div>
         <div class="input-group">
-            <label>Preço atual na caixa (€)</label>
+            <label>Valor que passa na caixa (€)</label>
             <input type="number" id="caixaUn" step="0.01" placeholder="Ex: 4.21" oninput="calcUn()">
         </div>
         <div class="input-group">
-            <label>Preço pretendido (€)</label>
+            <label>Valor que pretendes (€)</label>
             <input type="number" id="alvoUn" step="0.01" placeholder="Ex: 3.90" oninput="calcUn()">
         </div>
     </div>
 
     <div id="modoPeso" class="hidden">
+        <div class="info-note">
+            <div class="info-note-header">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+                </svg>
+                Atenção
+            </div>
+            Calcular apenas neste modo em produtos ao peso quando está em vigor promoção diferente da que estava exposta para o cliente ou por algum motivo o preço passar mal apesar de estar correto em sistema.
+        </div>
         <div class="input-group">
             <label>Peso do artigo (Kg)</label>
             <input type="number" id="pesoKg" step="0.001" placeholder="Ex: 0.550" oninput="calcPeso()">
         </div>
         <div class="input-group">
-            <label>Preço Base/Kg no PC (€)</label>
+            <label>Preço do Kg que passa na caixa (€)</label>
             <input type="number" id="basePeso" step="0.01" placeholder="Ex: 10.00" oninput="calcPeso()">
         </div>
         <div class="input-group">
@@ -226,7 +269,7 @@
     </div>
 
     <div class="result-box">
-        <div class="result-label" id="resLabel">Novo Preço Base a Marcar</div>
+        <div class="result-label" id="resLabel">colocar no POS</div>
         <div id="resultado" class="result-val">0.00 €</div>
     </div>
 
@@ -239,21 +282,29 @@
         
         <h4>📦 Modo Unitário</h4>
         <ul>
-            <li><strong>Preço base antes de forçar:</strong> O preço original registado no sistema.</li>
-            <li><strong>Preço atual na caixa:</strong> O valor errado que a caixa cobra hoje.</li>
-            <li><strong>Preço pretendido:</strong> O valor final correto.</li>
+            <li><strong>Preço base do artigo:</strong> O preço original registado no sistema.</li>
+            <li><strong>Valor que passa na caixa:</strong> O valor errado que a caixa cobra hoje.</li>
+            <li><strong>Valor que pretendes:</strong> O valor final correto.</li>
+            <li class="result-highlight"><strong>Colocar no POS (Caixa Vermelha):</strong> O novo preço base que deves inserir no sistema.</li>
         </ul>
 
         <h4>⚖️ Modo Ao Peso (Kg)</h4>
         <ul>
             <li><strong>Peso do artigo:</strong> Valor exato da balança (ex: 0.500).</li>
-            <li><strong>Preço Base/Kg no PC:</strong> O preço por quilo original.</li>
+            <li><strong>Preço do Kg que passa na caixa:</strong> O preço por quilo que está atualmente no sistema.</li>
             <li><strong>Valor que passa na caixa:</strong> O preço total que aparece no visor.</li>
             <li><strong>Valor que pretendes:</strong> O preço total que queres cobrar.</li>
+            <li class="result-highlight"><strong>Colocar no POS (Caixa Vermelha):</strong> O novo preço por Kg que deves inserir no sistema.</li>
         </ul>
         
-        <div class="note-box">
-            No modo peso, o resultado final será o <strong>novo preço por Kg</strong> que deves colocar no pc quando forças o preço.
+        <div class="info-note" style="margin-top: 20px;">
+            <div class="info-note-header">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+                </svg>
+                Atenção
+            </div>
+            Calcular apenas neste modo em produtos ao peso quando está em vigor promoção diferente da que estava exposta para o cliente ou por algum motivo o preço passar mal apesar de estar correto em sistema.
         </div>
         
         <button class="btn-fechar-modal" onclick="toggleAjuda()">Fechar</button>
@@ -272,7 +323,8 @@
         document.getElementById('modoUnidade').classList.toggle('hidden', tab !== 'unidade');
         document.getElementById('modoPeso').classList.toggle('hidden', tab !== 'peso');
         
-        document.getElementById('resLabel').innerText = tab === 'unidade' ? "Novo Preço Base" : "Novo Preço Base / Kg";
+        // Mantém "colocar no POS" para ambos os modos, conforme pedido
+        document.getElementById('resLabel').innerText = "colocar no POS";
         
         // Limpa apenas valores
         limparValuesOnly();
