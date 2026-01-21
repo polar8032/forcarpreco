@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calculadora PriceForce</title>
+    <title>Forçar Preço</title>
     <style>
         :root {
             --primary: #4361ee;
@@ -14,11 +14,14 @@
             --white: #ffffff;
             --danger: #ef233c;
             --shadow: 0 10px 30px rgba(0,0,0,0.08);
-            --radius: 16px;
+            --radius: 20px;
+            --anim-speed: 0.3s;
+            --bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --smooth: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: var(--bg-gradient);
             min-height: 100vh;
             margin: 0;
@@ -27,6 +30,7 @@
             justify-content: center;
             padding: 15px;
             color: var(--text-dark);
+            -webkit-font-smoothing: antialiased;
         }
 
         .card {
@@ -37,64 +41,90 @@
             width: 100%;
             max-width: 420px;
             position: relative;
+            transition: height var(--anim-speed) var(--smooth);
+            overflow: hidden; /* Importante para animação de altura */
         }
 
         /* Header e Botão Ajuda */
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        h2 { margin: 0; font-size: 1.4rem; color: var(--text-dark); font-weight: 700; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        h2 { margin: 0; font-size: 1.5rem; color: var(--text-dark); font-weight: 800; letter-spacing: -0.5px; }
         
         .btn-ajuda {
             background: var(--primary-light);
             color: var(--primary);
             border: none;
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             cursor: pointer;
             display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s ease, background-color 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Feedback Tátil Genérico */
+        .btn-ajuda:active, .tab:active, button:active, input:active {
+            transform: scale(0.92) !important;
         }
 
         /* Tabs */
         .tabs-container {
             background: #f1f3f5;
             padding: 5px;
-            border-radius: 12px;
+            border-radius: 14px;
             display: flex;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            position: relative;
         }
         .tab {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
             cursor: pointer;
             font-weight: 600;
             color: var(--text-light);
-            border-radius: 8px;
-            transition: all 0.2s ease;
+            border-radius: 10px;
+            transition: all 0.3s var(--smooth);
             font-size: 0.95rem;
             -webkit-tap-highlight-color: transparent;
+            z-index: 1;
         }
         .tab.active {
             background: var(--white);
             color: var(--primary);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: scale(1);
+        }
+
+        /* Container de Conteúdo Animado */
+        .content-wrapper {
+            transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .content-wrapper.fade-out {
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
         }
 
         /* Form Elements */
-        .input-group { margin-bottom: 12px; }
-        label { display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-group { margin-bottom: 16px; }
+        label { display: block; font-size: 0.8rem; color: var(--text-light); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         input {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: 2px solid transparent;
             background: #f8f9fa;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1.1rem;
             color: var(--text-dark);
             box-sizing: border-box;
-            font-weight: 500;
+            font-weight: 600;
+            transition: all 0.2s ease, transform 0.1s;
         }
         input:focus {
             background: var(--white);
@@ -106,71 +136,110 @@
         /* Result Box */
         .result-box {
             background: linear-gradient(135deg, #fff0f3 0%, #ffe3e3 100%);
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 12px;
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 16px;
             text-align: center;
-            border: 1px solid rgba(239, 35, 60, 0.2);
+            border: 1px solid rgba(239, 35, 60, 0.15);
+            transition: transform 0.2s var(--bounce);
         }
-        .result-label { font-size: 0.75rem; color: var(--danger); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; opacity: 0.8; }
-        .result-val { font-size: 2rem; font-weight: 800; color: var(--danger); letter-spacing: -1px; }
+        .result-label { font-size: 0.75rem; color: var(--danger); text-transform: uppercase; font-weight: 800; letter-spacing: 1.2px; margin-bottom: 5px; opacity: 0.8; }
+        .result-val { font-size: 2.2rem; font-weight: 900; color: var(--danger); letter-spacing: -1px; }
 
         /* Buttons */
         .btn-limpar {
             width: 100%;
-            margin-top: 15px;
-            padding: 14px;
+            margin-top: 20px;
+            padding: 16px;
             background-color: white;
             color: var(--text-light);
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.2s, transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
         }
-        .btn-limpar:active { background-color: #f8f9fa; border-color: #cbd5e1; }
-
+        
         .hidden { display: none; }
         
-        /* Modal Styles */
+        /* Modal Styles (Bottom Sheet Style) */
         #modalAjuda { 
-            display: none; 
             position: fixed; 
             z-index: 9999; 
             left: 0; 
             top: 0; 
             width: 100%; 
             height: 100%; 
-            background: rgba(0,0,0,0.5); 
-            backdrop-filter: blur(3px);
-            overflow-y: auto; 
+            background: rgba(0,0,0,0.6); 
+            backdrop-filter: blur(4px);
+            
+            /* Estado inicial (fechado) */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            
+            display: flex;
+            align-items: flex-end; /* Alinha em baixo para mobile */
+            justify-content: center;
+        }
+        
+        #modalAjuda.open {
+            opacity: 1;
+            visibility: visible;
         }
         
         .modal-content {
             background: var(--white);
-            margin: 40px auto; 
-            padding: 25px;
-            border-radius: var(--radius);
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            position: relative;
+            margin: 0; 
+            padding: 30px 25px;
+            border-radius: 24px 24px 0 0; /* Arredondado só em cima */
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+            
+            /* Animação de slide */
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+            max-height: 85vh;
+            overflow-y: auto;
         }
 
-        .modal-content h3 { color: var(--primary); margin-top: 0; font-size: 1.3rem; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;}
-        .modal-content h4 { color: var(--text-dark); margin: 20px 0 10px 0; font-size: 1rem; }
+        #modalAjuda.open .modal-content {
+            transform: translateY(0);
+        }
+        
+        /* Ajuste para desktop */
+        @media (min-width: 600px) {
+            #modalAjuda { align-items: center; }
+            .modal-content { 
+                border-radius: 24px; 
+                margin: 20px; 
+                transform: scale(0.9) translateY(20px);
+                opacity: 0;
+            }
+            #modalAjuda.open .modal-content {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h3 { color: var(--text-dark); margin-top: 0; font-size: 1.5rem; margin-bottom: 20px; font-weight: 800; }
+        .modal-content h4 { color: var(--primary); margin: 25px 0 10px 0; font-size: 1.1rem; font-weight: 700; }
         .modal-content ul { padding-left: 0; list-style: none; margin: 0; }
-        .modal-content li { margin-bottom: 8px; font-size: 0.9rem; color: #555; padding-left: 10px; border-left: 3px solid #eee; }
+        .modal-content li { margin-bottom: 12px; font-size: 0.95rem; color: #4a4a4a; padding-left: 15px; border-left: 3px solid #e2e8f0; }
         
         /* Nota Azul estilo aviso */
         .info-note {
             background: var(--primary-light);
             color: var(--text-dark);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
             border-left: 4px solid var(--primary);
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
         .info-note-header {
@@ -178,16 +247,16 @@
             align-items: center;
             font-weight: 800;
             color: var(--primary);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             font-size: 0.85rem;
             letter-spacing: 0.5px;
         }
         
         .info-note-header svg {
-            width: 18px;
-            height: 18px;
-            margin-right: 6px;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
             flex-shrink: 0;
         }
 
@@ -195,28 +264,31 @@
             color: var(--danger) !important;
             font-weight: 700;
             border-left-color: var(--danger) !important;
+            background: #fff5f5;
+            padding: 8px 8px 8px 15px;
+            border-radius: 0 8px 8px 0;
         }
 
         .btn-fechar-modal {
             background: var(--text-dark);
             color: white;
             border: none;
-            padding: 14px;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: 14px;
             cursor: pointer;
             width: 100%;
-            margin-top: 25px;
-            font-weight: 600;
-            font-size: 1rem;
+            margin-top: 30px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: transform 0.1s;
         }
-        .btn-fechar-modal:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="card" id="mainCard">
     <header>
-        <h2>Ajuste de Preço</h2>
+        <h2>Forçar Preço</h2>
         <button class="btn-ajuda" onclick="toggleAjuda()">?</button>
     </header>
     
@@ -225,46 +297,48 @@
         <div class="tab" id="tabPeso" onclick="switchTab('peso')">Ao Peso (Kg)</div>
     </div>
 
-    <div id="modoUnidade">
-        <div class="input-group">
-            <label>Preço base do artigo (€)</label>
-            <input type="number" id="baseUn" step="0.01" placeholder="Ex: 5.00" oninput="calcUn()">
-        </div>
-        <div class="input-group">
-            <label>Valor que passa na caixa (€)</label>
-            <input type="number" id="caixaUn" step="0.01" placeholder="Ex: 4.21" oninput="calcUn()">
-        </div>
-        <div class="input-group">
-            <label>Valor que pretendes (€)</label>
-            <input type="number" id="alvoUn" step="0.01" placeholder="Ex: 3.90" oninput="calcUn()">
-        </div>
-    </div>
-
-    <div id="modoPeso" class="hidden">
-        <div class="info-note">
-            <div class="info-note-header">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
-                </svg>
-                Atenção
+    <div id="contentWrapper" class="content-wrapper">
+        <div id="modoUnidade">
+            <div class="input-group">
+                <label>Preço base do artigo (€)</label>
+                <input type="number" id="baseUn" step="0.01" placeholder="Ex: 5.00" oninput="calcUn()">
             </div>
-            Calcular apenas neste modo em produtos ao peso quando está em vigor promoção diferente da que estava exposta para o cliente ou por algum motivo o preço passar mal apesar de estar correto em sistema.
+            <div class="input-group">
+                <label>Valor que passa na caixa (€)</label>
+                <input type="number" id="caixaUn" step="0.01" placeholder="Ex: 4.21" oninput="calcUn()">
+            </div>
+            <div class="input-group">
+                <label>Valor que pretendes (€)</label>
+                <input type="number" id="alvoUn" step="0.01" placeholder="Ex: 3.90" oninput="calcUn()">
+            </div>
         </div>
-        <div class="input-group">
-            <label>Peso do artigo (Kg)</label>
-            <input type="number" id="pesoKg" step="0.001" placeholder="Ex: 0.550" oninput="calcPeso()">
-        </div>
-        <div class="input-group">
-            <label>Preço do Kg que passa na caixa (€)</label>
-            <input type="number" id="basePeso" step="0.01" placeholder="Ex: 10.00" oninput="calcPeso()">
-        </div>
-        <div class="input-group">
-            <label>Valor que passa na caixa (€)</label>
-            <input type="number" id="caixaPeso" step="0.01" placeholder="Ex: 4.50" oninput="calcPeso()">
-        </div>
-        <div class="input-group">
-            <label>Valor que pretendes (€)</label>
-            <input type="number" id="alvoPeso" step="0.01" placeholder="Ex: 4.00" oninput="calcPeso()">
+
+        <div id="modoPeso" class="hidden">
+            <div class="info-note">
+                <div class="info-note-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
+                    </svg>
+                    Atenção
+                </div>
+                Calcular apenas neste modo em produtos ao peso quando está em vigor promoção diferente da que estava exposta para o cliente ou por algum motivo o preço passar mal apesar de estar correto em sistema.
+            </div>
+            <div class="input-group">
+                <label>Peso do artigo (Kg)</label>
+                <input type="number" id="pesoKg" step="0.001" placeholder="Ex: 0.550" oninput="calcPeso()">
+            </div>
+            <div class="input-group">
+                <label>Preço do Kg que passa na caixa (€)</label>
+                <input type="number" id="basePeso" step="0.01" placeholder="Ex: 10.00" oninput="calcPeso()">
+            </div>
+            <div class="input-group">
+                <label>Valor que passa na caixa (€)</label>
+                <input type="number" id="caixaPeso" step="0.01" placeholder="Ex: 4.50" oninput="calcPeso()">
+            </div>
+            <div class="input-group">
+                <label>Valor que pretendes (€)</label>
+                <input type="number" id="alvoPeso" step="0.01" placeholder="Ex: 4.00" oninput="calcPeso()">
+            </div>
         </div>
     </div>
 
@@ -285,7 +359,7 @@
             <li><strong>Preço base do artigo:</strong> O preço original registado no sistema.</li>
             <li><strong>Valor que passa na caixa:</strong> O valor errado que a caixa cobra hoje.</li>
             <li><strong>Valor que pretendes:</strong> O valor final correto.</li>
-            <li class="result-highlight"><strong>Colocar no POS (Caixa Vermelha):</strong> O novo preço base que deves inserir no sistema.</li>
+            <li class="result-highlight"><strong>Colocar no POS:</strong> O novo preço base que deves inserir no sistema.</li>
         </ul>
 
         <h4>⚖️ Modo Ao Peso (Kg)</h4>
@@ -294,18 +368,8 @@
             <li><strong>Preço do Kg que passa na caixa:</strong> O preço por quilo que está atualmente no sistema.</li>
             <li><strong>Valor que passa na caixa:</strong> O preço total que aparece no visor.</li>
             <li><strong>Valor que pretendes:</strong> O preço total que queres cobrar.</li>
-            <li class="result-highlight"><strong>Colocar no POS (Caixa Vermelha):</strong> O novo preço por Kg que deves inserir no sistema.</li>
+            <li class="result-highlight"><strong>Colocar no POS:</strong> O novo preço por Kg que deves inserir no sistema.</li>
         </ul>
-        
-        <div class="info-note" style="margin-top: 20px;">
-            <div class="info-note-header">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd" />
-                </svg>
-                Atenção
-            </div>
-            Calcular apenas neste modo em produtos ao peso quando está em vigor promoção diferente da que estava exposta para o cliente ou por algum motivo o preço passar mal apesar de estar correto em sistema.
-        </div>
         
         <button class="btn-fechar-modal" onclick="toggleAjuda()">Fechar</button>
     </div>
@@ -313,21 +377,36 @@
 
 <script>
     let currentTab = 'unidade';
+    let isAnimating = false;
 
     function switchTab(tab) {
-        currentTab = tab;
+        if (currentTab === tab || isAnimating) return;
         
+        isAnimating = true;
+        const wrapper = document.getElementById('contentWrapper');
+        
+        // 1. Atualiza visual das tabs
         document.getElementById('tabUn').classList.toggle('active', tab === 'unidade');
         document.getElementById('tabPeso').classList.toggle('active', tab === 'peso');
         
-        document.getElementById('modoUnidade').classList.toggle('hidden', tab !== 'unidade');
-        document.getElementById('modoPeso').classList.toggle('hidden', tab !== 'peso');
-        
-        // Mantém "colocar no POS" para ambos os modos, conforme pedido
-        document.getElementById('resLabel').innerText = "colocar no POS";
-        
-        // Limpa apenas valores
-        limparValuesOnly();
+        // 2. Fade Out
+        wrapper.classList.add('fade-out');
+
+        // 3. Aguarda a animação sair para trocar o conteúdo
+        setTimeout(() => {
+            currentTab = tab;
+            
+            document.getElementById('modoUnidade').classList.toggle('hidden', tab !== 'unidade');
+            document.getElementById('modoPeso').classList.toggle('hidden', tab !== 'peso');
+            
+            // Limpa valores para nova tab
+            limparValuesOnly();
+            
+            // 4. Fade In
+            wrapper.classList.remove('fade-out');
+            
+            isAnimating = false;
+        }, 250); // Tempo sincronizado com CSS transition
     }
 
     function calcUn() {
@@ -336,6 +415,7 @@
         const a = parseFloat(document.getElementById('alvoUn').value);
         if (b && c && a) {
             document.getElementById('resultado').innerText = (a / (c / b)).toFixed(2) + " €";
+            pulseResult();
         }
     }
 
@@ -349,11 +429,23 @@
             const coeficiente = (valorCaixa / peso) / baseKg;
             const novoBaseKg = (valorAlvo / peso) / coeficiente;
             document.getElementById('resultado').innerText = novoBaseKg.toFixed(2) + " €/Kg";
+            pulseResult();
         }
+    }
+
+    // Pequeno pulso visual quando o resultado muda
+    function pulseResult() {
+        const resBox = document.querySelector('.result-box');
+        resBox.style.transform = "scale(1.02)";
+        setTimeout(() => resBox.style.transform = "scale(1)", 150);
     }
 
     function limpar() {
         limparValuesOnly();
+        // Feedback visual
+        const btn = document.querySelector('.btn-limpar');
+        btn.innerText = "Limpo!";
+        setTimeout(() => btn.innerText = "Limpar Tudo", 1000);
     }
 
     function limparValuesOnly() {
@@ -363,18 +455,15 @@
 
     function toggleAjuda() {
         const m = document.getElementById('modalAjuda');
-        if (m.style.display === 'block') {
-            m.style.display = 'none';
-        } else {
-            m.style.display = 'block';
-        }
+        // Usa classe para animar em vez de display direto
+        m.classList.toggle('open');
     }
     
-    // Fecha o modal se clicar fora da caixa branca
+    // Fecha o modal se clicar fora (na área escura)
     window.onclick = function(event) {
         const m = document.getElementById('modalAjuda');
         if (event.target == m) {
-            m.style.display = "none";
+            m.classList.remove('open');
         }
     }
 </script>
