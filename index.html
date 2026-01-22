@@ -35,7 +35,7 @@
             min-height: 100vh;
             margin: 0;
             display: flex;
-            flex-direction: column; /* Alterado para coluna para acomodar o rodapé */
+            flex-direction: column; 
             align-items: center;
             justify-content: center;
             padding: 15px;
@@ -73,27 +73,65 @@
             opacity: 0.9;
         }
 
-        /* Header e Botão Ajuda */
+        /* Header e Botões de Topo */
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        h2 { margin: 0; font-size: 1.5rem; color: var(--text-dark); font-weight: 800; letter-spacing: -0.5px; }
+        h2 { margin: 0; font-size: 1.4rem; color: var(--text-dark); font-weight: 800; letter-spacing: -0.5px; }
         
-        .btn-ajuda {
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Botão Share no Header (Estilo Pill com Texto) */
+        .btn-share-pill {
             background: var(--primary-light);
             color: var(--primary);
             border: none;
-            width: 36px;
-            height: 36px;
+            height: 38px;
+            padding: 0 14px;
+            border-radius: 19px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 6px;
+            transition: transform 0.1s ease, background-color 0.2s, color 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            white-space: nowrap; /* Impede quebra de linha */
+        }
+        
+        .btn-share-pill svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            margin-bottom: 1px;
+        }
+        
+        .btn-share-pill:active {
+            transform: scale(0.96);
+        }
+
+        /* Botão Ajuda (Circular) */
+        .btn-icon {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             font-weight: bold;
             font-size: 1.2rem;
             cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            transition: transform 0.1s ease, background-color 0.2s;
+            transition: transform 0.1s ease, background-color 0.2s, color 0.2s;
             -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
         }
         
-        /* Feedback Tátil Genérico */
-        .btn-ajuda:active, .tab:active, button:active, input:active {
+        .btn-icon:active, .tab:active, button:active, input:active {
             transform: scale(0.96) !important;
         }
 
@@ -188,36 +226,6 @@
             font-size: 1rem;
             transition: all 0.2s, transform 0.1s;
             -webkit-tap-highlight-color: transparent;
-        }
-
-        /* Botão de Partilha */
-        .btn-share {
-            width: 100%;
-            margin-top: 12px;
-            padding: 14px;
-            background-color: var(--primary-light);
-            color: var(--primary);
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background-color 0.2s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        .btn-share:hover {
-            background-color: #dbe4ff;
-        }
-
-        .btn-share svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
         }
         
         .hidden { display: none; }
@@ -341,7 +349,16 @@
 <div class="card" id="mainCard">
     <header>
         <h2>Forçar Preço</h2>
-        <button class="btn-ajuda" onclick="toggleAjuda()">?</button>
+        <div class="header-actions">
+            <!-- Botão de Partilha com Texto -->
+            <button class="btn-share-pill" onclick="partilharApp(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                </svg>
+                Partilhar app
+            </button>
+            <button class="btn-icon" onclick="toggleAjuda()">?</button>
+        </div>
     </header>
     
     <div class="tabs-container">
@@ -411,18 +428,11 @@
     </div>
 
     <button class="btn-limpar" onclick="limpar()">Limpar Tudo</button>
-    
-    <button class="btn-share" onclick="partilharApp()">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
-        </svg>
-        Partilhar app
-    </button>
 </div>
 
-<!-- Rodapé Adicionado -->
+<!-- Rodapé -->
 <div class="app-footer">
-    Desenvolvido por Ricardo
+    Copyright Ricardo Salas
 </div>
 
 <div id="modalAjuda">
@@ -500,9 +510,6 @@
         const targetKg = parseFloat(document.getElementById('targetKg').value);
 
         if (valBase && valCaixa && targetKg) {
-            // Lógica Proporcional Simples (Target * (Base/Caixa))
-            // Assume que Base e Caixa estão na mesma unidade (ambos Kg ou ambos Totais)
-            
             if (valCaixa > 0) {
                 const novoBaseKg = targetKg * (valBase / valCaixa);
                 document.getElementById('resultado').innerText = novoBaseKg.toFixed(2) + " €/Kg";
@@ -535,27 +542,62 @@
         m.classList.toggle('open');
     }
     
-    async function partilharApp() {
+    async function partilharApp(btnElement) {
         const shareData = {
             title: 'Forçar Preço',
             text: 'Calculadora rápida para acertos de preços e quebras.',
             url: window.location.href
         };
 
-        const btn = document.querySelector('.btn-share');
-        const originalHTML = btn.innerHTML;
+        // 1. Prioridade Total: Partilha Nativa (Android/iOS)
+        // Se o navegador diz que tem partilha, usamos APENAS isso.
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                // Se o utilizador cancelar ou der erro, não fazemos nada (comportamento nativo)
+                // Não tentamos copiar automaticamente para não confundir
+                console.log('Partilha nativa cancelada ou erro:', err);
+            }
+            return; // IMPORTANTE: Sai da função aqui. Não executa o código de copiar abaixo.
+        }
+
+        // 2. Fallback: Apenas para Desktop ou navegadores sem partilha
+        // Criamos uma area de texto temporária invisível
+        const textArea = document.createElement("textarea");
+        textArea.value = window.location.href;
+        
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+        
+        textArea.focus();
+        textArea.select();
 
         try {
-            if (navigator.share) {
-                await navigator.share(shareData);
-            } else {
-                await navigator.clipboard.writeText(window.location.href);
-                btn.innerHTML = "Link copiado!";
-                setTimeout(() => btn.innerHTML = originalHTML, 2000);
+            const successful = document.execCommand('copy');
+            
+            if (successful && btnElement) {
+                // Feedback visual de "Copiado" apenas se usou a cópia
+                const originalBg = btnElement.style.background;
+                const originalColor = btnElement.style.color;
+                
+                btnElement.style.background = 'var(--success)';
+                btnElement.style.color = 'white';
+                
+                setTimeout(() => {
+                    btnElement.style.background = originalBg;
+                    btnElement.style.color = originalColor;
+                }, 1500);
+            } else if (!successful) {
+                alert("Não foi possível copiar o link. Por favor copie do navegador.");
             }
         } catch (err) {
-            console.log('Partilha cancelada ou erro');
+            console.error('Erro ao copiar', err);
         }
+        
+        document.body.removeChild(textArea);
     }
     
     window.onclick = function(event) {
